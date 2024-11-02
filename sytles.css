@@ -4,6 +4,12 @@ h1 {
   font-family: sans-serif;
 }
 
+h2 {
+  text-align: center;
+  color: #f0f0f0;
+  font-family: sans-serif;
+}
+
 body {
   background-color: #312e2b;
 }
@@ -40,5 +46,13 @@ body {
 }
 
 .chess-piece {
-    font-size: 2rem;
-  }
+  font-size: 2rem;
+}
+
+.white-piece {
+  color: white;
+}
+
+.black-piece {
+  color: black;
+}

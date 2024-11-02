@@ -56,3 +56,7 @@ body {
 .black-piece {
   color: black;
 }
+
+.highlight {
+    background-color: rgba(255, 0, 0, 0.2); /* Light red with 20% opacity */
+  }

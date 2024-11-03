@@ -1,3 +1,4 @@
+// app.js
 
 const board = document.querySelector(".chessboard");
 
@@ -47,6 +48,9 @@ const initialBoard = [
     "./icons/wr.png",
   ],
 ];
+
+let eatenWhitePieces = [];
+let eatenBlackPieces = [];
 
 let copyBoard = initialBoard.map((row) => [...row]);
 let currentPlayer = "white";
@@ -105,13 +109,10 @@ function pieceClickHandler(e) {
   const piece = e.target;
   const pieceColor = piece.src.includes("/w") ? "white" : "black";
   if (pieceColor !== currentPlayer) return;
-
   clearHighlights();
-
   selectedPiece = piece;
   const moves = checkPieceToMove(piece);
   highlightMoves(moves);
-
   document.querySelectorAll(".highlight").forEach((square) => {
     square.addEventListener("click", squareClickHandler);
   });
@@ -146,6 +147,7 @@ function squareClickHandler(e) {
     document.querySelectorAll(".highlight").forEach((square) => {
       square.removeEventListener("click", squareClickHandler);
     });
+
     currentPlayer = currentPlayer === "white" ? "black" : "white";
     document.querySelector("h2").innerText = `${capitalize(
       currentPlayer
@@ -215,14 +217,13 @@ function calculatePawnMoves(row, col) {
   const direction = isWhite ? -1 : 1;
   const startRow = isWhite ? 6 : 1;
 
-
   if (copyBoard[row + direction] && copyBoard[row + direction][col] === "") {
     moves[row + direction][col] = true;
-
     if (row === startRow && copyBoard[row + 2 * direction][col] === "") {
       moves[row + 2 * direction][col] = true;
     }
   }
+
   for (let dx of [-1, 1]) {
     const newRow = row + direction;
     const newCol = col + dx;
@@ -243,10 +244,10 @@ function calculateRookMoves(row, col) {
   const isWhite = piece.includes("/w");
 
   const directions = [
-    { dr: -1, dc: 0 }, 
-    { dr: 1, dc: 0 }, 
-    { dr: 0, dc: -1 }, 
-    { dr: 0, dc: 1 }, 
+    { dr: -1, dc: 0 },
+    { dr: 1, dc: 0 },
+    { dr: 0, dc: -1 },
+    { dr: 0, dc: 1 },
   ];
 
   for (const { dr, dc } of directions) {
@@ -378,17 +379,38 @@ function calculateKingMoves(row, col) {
 }
 
 function checkGameStatus() {
-  const whiteKingExists = document.querySelector("img[src='./icons/wk.png']");
-  const blackKingExists = document.querySelector("img[src='./icons/bk.png']");
-  if (!whiteKingExists) {
-    alert("Black wins!");
-  } else if (!blackKingExists) {
-    alert("White wins!");
-  }
+  //verificar se o rei esta em check ou checkMate
 }
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function isKingInCheck(row, col) {
+  // Encontra a posição do rei
+  //verificar se existe alguma peca que possui uma jogada true para a posicao do rei
+  //se sim, o rei esta em check
+}
+
+function isCheckMate() {
+  //verificar se o rei esta em check
+  //verificar se o rei pode se salvar
+  //verificar se existe alguma peca que pode ser movida para salvar o rei
+  //se nao, checkmate
+}
+
+function isPawnOnEdge(pawn) {
+  //verificar se o peao chegou no final do tabuleiro
+  //se sim, promover o peao
+}
+
+function resetGame() {
+  copyBoard = initialBoard.map((row) => [...row]);
+  currentPlayer = "white";
+  selectedPiece = null;
+  createBoard();
+  document.querySelector("h2").innerText = `Press any key to start the game`;
+  document.addEventListener("keypress", startGame);
 }
 
 createBoard();

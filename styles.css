@@ -30,11 +30,11 @@ body {
 }
 
 .light {
-  background-color: #f0d9b5;
+  background-color: whitesmoke;
 }
 
 .dark {
-  background-color: #b58863;
+  background-color: pink;
 }
 
 .square {
@@ -52,5 +52,5 @@ body {
 
 .highlight {
   background-color: rgb(235, 97, 80);
-  opacity: 3;
+  opacity: 10;
 }

@@ -1,3 +1,4 @@
+
 const board = document.querySelector(".chessboard");
 
 const initialBoard = [
@@ -85,19 +86,24 @@ function createPieceElement(piece, row, col) {
   pieceElement.classList.add("chess-piece");
   pieceElement.dataset.row = row;
   pieceElement.dataset.col = col;
-  pieceElement.addEventListener("click", pieceClickHandler);
   return pieceElement;
 }
 
-document.addEventListener("keypress", () => {
-  document.querySelector("h2").innerText = "Game started!";
-});
+document.addEventListener("keypress", startGame);
+
+function startGame() {
+  document.querySelector("h2").innerText = `${capitalize(
+    currentPlayer
+  )}'s turn`;
+  document.querySelectorAll(".chess-piece").forEach((piece) => {
+    piece.addEventListener("click", pieceClickHandler);
+  });
+  document.removeEventListener("keypress", startGame);
+}
 
 function pieceClickHandler(e) {
   const piece = e.target;
-  const pieceRow = parseInt(piece.dataset.row);
-  const pieceCol = parseInt(piece.dataset.col);
-  const pieceColor = piece.src.includes("w") ? "white" : "black";
+  const pieceColor = piece.src.includes("/w") ? "white" : "black";
   if (pieceColor !== currentPlayer) return;
 
   clearHighlights();
@@ -118,10 +124,13 @@ function squareClickHandler(e) {
   if (targetSquare && targetSquare.classList.contains("highlight")) {
     const targetRow = parseInt(targetSquare.dataset.row);
     const targetCol = parseInt(targetSquare.dataset.col);
+
     const sourceRow = parseInt(selectedPiece.dataset.row);
     const sourceCol = parseInt(selectedPiece.dataset.col);
+
     copyBoard[targetRow][targetCol] = copyBoard[sourceRow][sourceCol];
     copyBoard[sourceRow][sourceCol] = "";
+
     const targetPiece = targetSquare.querySelector(".chess-piece");
     if (targetPiece && targetPiece !== selectedPiece) {
       targetPiece.remove();
@@ -137,11 +146,20 @@ function squareClickHandler(e) {
     document.querySelectorAll(".highlight").forEach((square) => {
       square.removeEventListener("click", squareClickHandler);
     });
-
     currentPlayer = currentPlayer === "white" ? "black" : "white";
+    document.querySelector("h2").innerText = `${capitalize(
+      currentPlayer
+    )}'s turn`;
 
     checkGameStatus();
   }
+}
+
+function clearHighlights() {
+  document.querySelectorAll(".highlight").forEach((square) => {
+    square.classList.remove("highlight");
+    square.removeEventListener("click", squareClickHandler);
+  });
 }
 
 function checkPieceToMove(piece) {
@@ -190,21 +208,17 @@ function highlightMoves(moves) {
   }
 }
 
-function clearHighlights() {
-  document.querySelectorAll(".highlight").forEach((square) => {
-    square.classList.remove("highlight");
-    square.removeEventListener("click", squareClickHandler);
-  });
-}
-
 function calculatePawnMoves(row, col) {
   const moves = initializeMovesMatrix();
   const piece = copyBoard[row][col];
-  const direction = piece.includes("/w") ? -1 : 1;
-  const startRow = piece.includes("/w") ? 6 : 1;
+  const isWhite = piece.includes("/w");
+  const direction = isWhite ? -1 : 1;
+  const startRow = isWhite ? 6 : 1;
 
-  if (copyBoard[row + direction][col] === "") {
+
+  if (copyBoard[row + direction] && copyBoard[row + direction][col] === "") {
     moves[row + direction][col] = true;
+
     if (row === startRow && copyBoard[row + 2 * direction][col] === "") {
       moves[row + 2 * direction][col] = true;
     }
@@ -212,12 +226,9 @@ function calculatePawnMoves(row, col) {
   for (let dx of [-1, 1]) {
     const newRow = row + direction;
     const newCol = col + dx;
-    if (newCol >= 0 && newCol < 8) {
-      const targetPiece = copyBoard[newRow] && copyBoard[newRow][newCol];
-      if (
-        targetPiece &&
-        targetPiece.includes(piece.includes("/w") ? "/b" : "/w")
-      ) {
+    if (newCol >= 0 && newCol < 8 && copyBoard[newRow]) {
+      const targetPiece = copyBoard[newRow][newCol];
+      if (targetPiece && targetPiece.includes(isWhite ? "/b" : "/w")) {
         moves[newRow][newCol] = true;
       }
     }
@@ -229,11 +240,13 @@ function calculatePawnMoves(row, col) {
 function calculateRookMoves(row, col) {
   const moves = initializeMovesMatrix();
   const piece = copyBoard[row][col];
+  const isWhite = piece.includes("/w");
+
   const directions = [
-    { dr: -1, dc: 0 },
-    { dr: 1, dc: 0 },
-    { dr: 0, dc: -1 },
-    { dr: 0, dc: 1 },
+    { dr: -1, dc: 0 }, 
+    { dr: 1, dc: 0 }, 
+    { dr: 0, dc: -1 }, 
+    { dr: 0, dc: 1 }, 
   ];
 
   for (const { dr, dc } of directions) {
@@ -244,7 +257,7 @@ function calculateRookMoves(row, col) {
       if (targetPiece === "") {
         moves[r][c] = true;
       } else {
-        if (targetPiece.includes(piece.includes("/w") ? "/b" : "/w")) {
+        if (targetPiece.includes(isWhite ? "/b" : "/w")) {
           moves[r][c] = true;
         }
         break;
@@ -260,6 +273,8 @@ function calculateRookMoves(row, col) {
 function calculateKnightMoves(row, col) {
   const moves = initializeMovesMatrix();
   const piece = copyBoard[row][col];
+  const isWhite = piece.includes("/w");
+
   const knightMoves = [
     { dr: -2, dc: -1 },
     { dr: -2, dc: 1 },
@@ -276,10 +291,7 @@ function calculateKnightMoves(row, col) {
     const c = col + dc;
     if (r >= 0 && r < 8 && c >= 0 && c < 8) {
       const targetPiece = copyBoard[r][c];
-      if (
-        targetPiece === "" ||
-        targetPiece.includes(piece.includes("/w") ? "/b" : "/w")
-      ) {
+      if (targetPiece === "" || targetPiece.includes(isWhite ? "/b" : "/w")) {
         moves[r][c] = true;
       }
     }
@@ -291,6 +303,8 @@ function calculateKnightMoves(row, col) {
 function calculateBishopMoves(row, col) {
   const moves = initializeMovesMatrix();
   const piece = copyBoard[row][col];
+  const isWhite = piece.includes("/w");
+
   const directions = [
     { dr: -1, dc: -1 },
     { dr: -1, dc: 1 },
@@ -306,7 +320,7 @@ function calculateBishopMoves(row, col) {
       if (targetPiece === "") {
         moves[r][c] = true;
       } else {
-        if (targetPiece.includes(piece.includes("/w") ? "/b" : "/w")) {
+        if (targetPiece.includes(isWhite ? "/b" : "/w")) {
           moves[r][c] = true;
         }
         break;
@@ -336,6 +350,8 @@ function calculateQueenMoves(row, col) {
 function calculateKingMoves(row, col) {
   const moves = initializeMovesMatrix();
   const piece = copyBoard[row][col];
+  const isWhite = piece.includes("/w");
+
   const kingMoves = [
     { dr: -1, dc: -1 },
     { dr: -1, dc: 0 },
@@ -352,10 +368,7 @@ function calculateKingMoves(row, col) {
     const c = col + dc;
     if (r >= 0 && r < 8 && c >= 0 && c < 8) {
       const targetPiece = copyBoard[r][c];
-      if (
-        targetPiece === "" ||
-        targetPiece.includes(piece.includes("/w") ? "/b" : "/w")
-      ) {
+      if (targetPiece === "" || targetPiece.includes(isWhite ? "/b" : "/w")) {
         moves[r][c] = true;
       }
     }
@@ -372,6 +385,10 @@ function checkGameStatus() {
   } else if (!blackKingExists) {
     alert("White wins!");
   }
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 createBoard();

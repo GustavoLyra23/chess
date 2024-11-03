@@ -46,17 +46,11 @@ body {
 }
 
 .chess-piece {
-  font-size: 2rem;
-}
-
-.white-piece {
-  color: white;
-}
-
-.black-piece {
-  color: black;
+  width: 40px;
+  height: 40px;
 }
 
 .highlight {
-    background-color: rgba(255, 0, 0, 0.2); /* Light red with 20% opacity */
-  }
+  background-color: rgb(235, 97, 80);
+  opacity: 3;
+}

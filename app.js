@@ -92,10 +92,12 @@ function createPieceElement(piece, row, col) {
   pieceElement.classList.add("chess-piece");
   pieceElement.dataset.row = row;
   pieceElement.dataset.col = col;
+  pieceElement.addEventListener("click", pieceClickHandler); // Assegure-se de adicionar o event listener aqui
   return pieceElement;
 }
 
 function startGame() {
+  createBoard(); // Assegure-se de criar o tabuleiro inicialmente
   document.querySelector("h2").innerText = `${capitalize(
     currentPlayer
   )}'s turn`;
@@ -136,7 +138,7 @@ function squareClickHandler(e) {
     copyBoard[sourceRow][sourceCol] = "";
     copyBoard[targetRow][targetCol] = movingPiece;
 
-    // Atualizar posição da peça selecionada
+    // Atualizar posição da peça selecionada temporariamente
     selectedPiece.dataset.row = targetRow;
     selectedPiece.dataset.col = targetCol;
 
@@ -151,19 +153,33 @@ function squareClickHandler(e) {
       selectedPiece.dataset.col = sourceCol;
 
       clearHighlights();
-      alert("Você não pode fazer um movimento que deixe seu rei em xeque.");
+      alert("You can't do this move while your king on check.");
       return;
     }
 
     // Remover a peça capturada, se houver
-    const targetPiece = targetSquare.querySelector(".chess-piece");
-    if (targetPiece && targetPiece !== selectedPiece) {
-      targetPiece.remove();
+    const targetPieceElement = targetSquare.querySelector(".chess-piece");
+    if (targetPieceElement && targetPieceElement !== selectedPiece) {
+      targetPieceElement.remove();
+
+      // Adicionar a peça capturada aos arrays apropriados
+      const capturedPieceSrc = originalTargetPiece;
+      if (capturedPieceSrc.includes("/w")) {
+        eatenWhitePieces.push(capturedPieceSrc);
+      } else if (capturedPieceSrc.includes("/b")) {
+        eatenBlackPieces.push(capturedPieceSrc);
+      }
     }
 
     // Mover a peça no DOM
     targetSquare.appendChild(selectedPiece);
 
+    // Verificar se a peça movida é um peão que alcançou a borda
+    if (movingPiece.includes("p.png")) {
+      isPawnOnEdge(selectedPiece);
+    }
+
+    // Limpar seleção e destaques
     selectedPiece = null;
     clearHighlights();
 
@@ -176,11 +192,13 @@ function squareClickHandler(e) {
       currentPlayer
     )}'s turn`;
 
+    // Remover event listeners dos destaques
     document.querySelectorAll(".highlight").forEach((square) => {
       square.removeEventListener("click", squareClickHandler);
     });
   }
 }
+
 function clearHighlights() {
   document.querySelectorAll(".highlight").forEach((square) => {
     square.classList.remove("highlight");
@@ -321,7 +339,6 @@ function calculateKnightMoves(row, col) {
       }
     }
   }
-
   return moves;
 }
 
@@ -413,7 +430,6 @@ function checkGameStatus() {
     alert(`${capitalize(opponent)} is in check.`);
   }
 }
-
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -531,14 +547,85 @@ function isCheckMate() {
 }
 
 function isPawnOnEdge(pawn) {
-  //verificar se o peao chegou no final do tabuleiro
-  //se sim, promover o peao
+  const row = parseInt(pawn.dataset.row);
+  const col = parseInt(pawn.dataset.col);
+
+  // Verificar se o peão chegou ao final do tabuleiro
+  if (
+    (pawn.src.includes("/w") && row === 0) ||
+    (pawn.src.includes("/b") && row === 7)
+  ) {
+    const pieceColor = pawn.src.includes("/w") ? "w" : "b";
+    const eatenPieces =
+      pieceColor === "w" ? eatenBlackPieces : eatenWhitePieces;
+
+    let newPieceType = "q"; // Default para rainha
+
+    if (eatenPieces.length > 0) {
+      // Filtrar tipos de peças disponíveis nos arrays de peças capturadas
+      const availablePieces = eatenPieces
+        .filter((src) => src.includes(`/${pieceColor}`))
+        .map((src) => src.split("/").pop().replace(".png", ""))
+        .filter((type) => ["q", "r", "b", "n"].includes(type));
+
+      if (availablePieces.length > 0) {
+        // Criar string de opções únicas
+        const uniqueOptions = [...new Set(availablePieces)];
+
+        // Mostrar prompt para escolher a peça de promoção
+        newPieceType = prompt(
+          `Promover peão para (${uniqueOptions.join(", ")}, q)`,
+          "q"
+        );
+        newPieceType = newPieceType ? newPieceType.toLowerCase() : "q";
+
+        // Validar a escolha
+        if (!["q", "r", "b", "n"].includes(newPieceType)) {
+          newPieceType = "q";
+        }
+
+        // Verificar se a peça escolhida está disponível nos eatenPieces
+        if (uniqueOptions.includes(newPieceType)) {
+          // Remover a peça escolhida do array de peças capturadas
+          const pieceIndex = eatenPieces.indexOf(
+            `./icons/${pieceColor}${newPieceType}.png`
+          );
+          if (pieceIndex !== -1) {
+            eatenPieces.splice(pieceIndex, 1);
+          }
+        } else {
+          // Se a escolha não estiver disponível, default para rainha
+          newPieceType = "q";
+        }
+      }
+    }
+
+    // Atualizar o tabuleiro e o DOM com a nova peça promovida
+    const newSrc = `./icons/${pieceColor}${newPieceType}.png`;
+    copyBoard[row][col] = newSrc;
+    pawn.src = newSrc;
+
+    alert(`Peão promovido para ${getFullPieceName(newPieceType, pieceColor)}!`);
+  }
 }
 
+// Função auxiliar para obter o nome completo da peça
+function getFullPieceName(type, color) {
+  const pieceNames = {
+    q: "Rainha",
+    r: "Torre",
+    b: "Bispo",
+    n: "Cavalo",
+  };
+  const colorName = color === "w" ? "Branca" : "Preta";
+  return `${colorName} ${pieceNames[type]}`;
+}
 function resetGame() {
   copyBoard = initialBoard.map((row) => [...row]);
   currentPlayer = "white";
   selectedPiece = null;
+  eatenWhitePieces = [];
+  eatenBlackPieces = [];
   createBoard();
   document.querySelector("h2").innerText = `Press any key to start the game`;
   document.addEventListener("keypress", startGame);

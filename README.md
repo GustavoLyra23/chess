@@ -4,7 +4,9 @@
   <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkMzVieTYxbjZ4bDB3MmFmd205NWxteTJ4MmFjdXdwNXVkZGJ4MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aAKPTkQJMUjNYdjX4Z/giphy.gif" width="400" alt="Chess Animation">
 </div>
 
-Welcome to **Insane Chess**, a chess project built with JavaScript, HTML, and CSS. This game offers a fully interactive chessboard for players to enjoy right in the browser.
+Welcome to **Insane Chess**, an interactive chess game built with JavaScript, HTML, and CSS. You can play it right in your browser!
+
+**[Try it here!](https://gustavolyra23.github.io/chess-js/)**
 
 ## Project Features
 - **Dynamic Interface**: Graphical representation of the board and pieces.
@@ -15,7 +17,7 @@ Welcome to **Insane Chess**, a chess project built with JavaScript, HTML, and CS
 - **Turn Indicator**: Visual indication of the current player's turn.
 - **Game Reset**: Allows the game to be reset at any time.
 
-## How to Use
+## How to Use Locally
 
 1. Clone this repository to your machine:
     ```bash
@@ -37,4 +39,4 @@ Welcome to **Insane Chess**, a chess project built with JavaScript, HTML, and CS
 
 ---
 
-**Enjoy playing INSANE CHESS!**
+**Enjoy playing INSANE CHESS!** 

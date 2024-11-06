@@ -1,7 +1,7 @@
 # INSANE CHESS
 
 <div align="center">
-  <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkMzVieTYxbjZ4bDB3MmFmd205NWxteTJ4MmFjdXdwNXVkZGJ4MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aAKPTkQJMUjNYdjX4Z/giphy.gif" width="400" alt="Chess Animation">
+  <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkMzVieTYxbjZ4bDB3MmFmd205NWxteTJ4MmFjdXdwNXVkZGJ4MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aAKPTkQJMUjNYdjX4Z/giphy.gif" width="400" alt="Chess Animation" style="border-radius: 15px;">
 </div>
 
 Welcome to **Insane Chess**, an interactive chess game built with JavaScript, HTML, and CSS. You can play it right in your browser!

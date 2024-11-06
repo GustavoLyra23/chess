@@ -1,6 +1,8 @@
 # INSANE CHESS
 
-![Chess Animation](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkMzVieTYxbjZ4bDB3MmFmd205NWxteTJ4MmFjdXdwNXVkZGJ4MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aAKPTkQJMUjNYdjX4Z/giphy.gif)
+<div align="center">
+  <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkMzVieTYxbjZ4bDB3MmFmd205NWxteTJ4MmFjdXdwNXVkZGJ4MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aAKPTkQJMUjNYdjX4Z/giphy.gif" width="400" alt="Chess Animation">
+</div>
 
 Welcome to **Insane Chess**, a chess project built with JavaScript, HTML, and CSS. This game offers a fully interactive chessboard for players to enjoy right in the browser.
 
@@ -32,5 +34,7 @@ Welcome to **Insane Chess**, a chess project built with JavaScript, HTML, and CS
 ## Requirements
 
 - A modern browser with JavaScript ES6+ support.
+
+---
 
 **Enjoy playing INSANE CHESS!**

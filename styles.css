@@ -1,13 +1,16 @@
 h1 {
+  font-family: cursive;
   text-align: center;
   color: #f0f0f0;
-  font-family: sans-serif;
+  font-weight: 400;
 }
 
 h2 {
+  font-family: cursive;
+  font-weight: 400;
+  font-style: normal;
   text-align: center;
   color: #f0f0f0;
-  font-family: sans-serif;
 }
 
 body {

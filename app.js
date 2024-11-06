@@ -93,8 +93,6 @@ function createPieceElement(piece, row, col) {
   return pieceElement;
 }
 
-document.addEventListener("keypress", startGame);
-
 function startGame() {
   document.querySelector("h2").innerText = `${capitalize(
     currentPlayer
@@ -143,6 +141,7 @@ function squareClickHandler(e) {
 
     selectedPiece = null;
     clearHighlights();
+    checkGameStatus();
 
     document.querySelectorAll(".highlight").forEach((square) => {
       square.removeEventListener("click", squareClickHandler);
@@ -152,8 +151,6 @@ function squareClickHandler(e) {
     document.querySelector("h2").innerText = `${capitalize(
       currentPlayer
     )}'s turn`;
-
-    checkGameStatus();
   }
 }
 
@@ -379,6 +376,7 @@ function calculateKingMoves(row, col) {
 }
 
 function checkGameStatus() {
+  isKingInCheck();
   //verificar se o rei esta em check ou checkMate
 }
 
@@ -386,10 +384,33 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function isKingInCheck(row, col) {
+function isKingInCheck() {
+  const kingColor = currentPlayer === "white" ? "b" : "w";
+  const kingObj = findTheKingOnBoard(kingColor);
+  document.querySelectorAll(".chess-piece").forEach((piece) => {
+    const moves = checkPieceToMove(piece);
+    if (moves[kingObj.row][kingObj.col]) {
+      setTimeout(() => {
+        window.alert("King is in check");
+        console.log("King is in check");
+      }, 100);
+    }
+  });
+
   // Encontra a posição do rei
-  //verificar se existe alguma peca que possui uma jogada true para a posicao do rei
+  //verificar se existe alguma peca que possui uma jogada true para a posição do rei
   //se sim, o rei esta em check
+}
+
+function findTheKingOnBoard(kingColor) {
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      const piece = copyBoard[i][j];
+      if (piece.includes(`/${kingColor}k.png`)) {
+        return { row: i, col: j };
+      }
+    }
+  }
 }
 
 function isCheckMate() {
@@ -413,4 +434,9 @@ function resetGame() {
   document.addEventListener("keypress", startGame);
 }
 
+function undoMoves() {
+  //desfazer jogadas
+}
+
 createBoard();
+document.addEventListener("keypress", startGame);
